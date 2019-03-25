@@ -1,8 +1,8 @@
-# AI2D (artificial intelligence)
+# AI2D (artificial intelligence 2D)
 
 Realize movement with artificial intelligence (further opponent).
 
-Main tasks:
+## Tasks:
 1) Realize the game on primitive objects, the basic logic of artificial intelligence:
 �- the player: a green circle
 �- opponent: red circle
@@ -13,12 +13,15 @@ Main tasks:
 6) Realize without Navesh Unity
 7) Control the player with the keys: left, right, top, bottom
 
-Additionally:
+## Additionally:
 1) Add to the scene obstacles that opponents must overcome and which block the player:
 �- static (walls)
 �- denamic (moving walls)
 2) Different speeds for different enemy states: "search", "patrolling", "pursuing"
 
-Unity 5.6.2
+## Implemented:
+All
+
+## Unity 5.6.2
 
 ![AI2D](screenshot.png)
