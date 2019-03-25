@@ -16,3 +16,5 @@ Additionally:
  - static (walls)
  - denamic (moving walls)
 2) Different speeds for different enemy states: "search", "patrolling", "pursuing"
+
+Unity 5.6.2
