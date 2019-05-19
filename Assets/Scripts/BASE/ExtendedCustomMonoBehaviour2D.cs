@@ -1,27 +1,49 @@
 using UnityEngine;
-using System.Collections;
 
 public class ExtendedCustomMonoBehaviour2D : MonoBehaviour 
 {
-	// This class is used to add some common variables to MonoBehaviour, rather than
-	// constantly repeating the same declarations in every class.
+	[Header("Base")]
+	[SerializeField]
+	protected bool didInit;
+	[SerializeField]
+	protected bool canControl;
 	
-	public Transform myTransform;
-	public GameObject myGO;
-	
-	public bool didInit;
-	public bool canControl;
-	
-	public int id;
-	
-	[System.NonSerialized]
-	public Vector3 tempVEC;
-	
-	[System.NonSerialized]
-	public Transform tempTR;
-	
+	protected int id;
+
+	protected Transform myTransform;
+	protected GameObject myGO;
+	protected Rigidbody2D myBody;
+
+	protected Vector3 tempVEC;
+	protected Transform tempTR;
+
+	// main events
+	void Start () {
+		Init ();
+	}
+
+	// main Logic
+
+	/// <summary>
+	/// Init main instance (myTransform, myGO, myBody2D), def. in Start.
+	/// </summary>
+	public virtual void Init() {
+		// cache refs to our transform and gameObject
+		if (!myTransform) {
+			myTransform = transform;
+		}
+		if (!myGO) {
+			myGO = gameObject;
+		}
+		if (!myBody) {
+			myBody = GetComponent<Rigidbody2D> ();
+		}
+
+		didInit = true;
+	}
+
 	public virtual void SetID( int anID )
 	{
-		id= anID;
+		id = anID;
 	}
 }

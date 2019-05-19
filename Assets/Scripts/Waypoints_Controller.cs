@@ -1,15 +1,13 @@
-// This is based on the waypoints.js script from the book
-// Game Development for iOS with Unity3d by Jeff W Murray
-
 using UnityEngine;
 using System.Collections;
 
-[AddComponentMenu("Utility/Waypoints Controller")]
+[AddComponentMenu("Utility/Waypoints Controller 2D")]
 
 public class Waypoints_Controller : MonoBehaviour {
 
 	[ExecuteInEditMode]
-	public float radiusGismo = 1;
+	[SerializeField]
+	private float radiusGismo = 1;
 
 	// this script simply gives us a visual path to make it easier to edit
 	// our waypoints
@@ -28,9 +26,12 @@ public class Waypoints_Controller : MonoBehaviour {
 	private Vector3 lastPos;
 	private Transform pointT;
 	
-	public bool closed=true;
-	public bool shouldReverse;
-	
+	[SerializeField]
+	protected bool closed=true;
+	[SerializeField]
+	protected bool shouldReverse;
+
+	// main event
 	void Start()
 	{
 		// make sure that when this script starts (on the device) that
@@ -108,7 +109,8 @@ public class Waypoints_Controller : MonoBehaviour {
 			Gizmos.DrawLine(currentPos, firstPoint);
 		}
 	}
-	
+
+	// main logic
 	public void GetTransforms()
 	{
 		// we store all of the waypoints transforms in an ArrayList,
@@ -180,10 +182,6 @@ public class Waypoints_Controller : MonoBehaviour {
 				return -1;
 			}
 	}
-	
-	// this function has the addition of a check to avoid finding the same transform as one passed in. we use
-	// this to make sure that when we are looking for the nearest waypoint we don't find the same one as
-	// we just passed
 	
 	public int FindNearestWaypoint ( Vector3 fromPos , Transform exceptThis, float maxRange) 
 	{		

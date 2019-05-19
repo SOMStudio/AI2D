@@ -383,11 +383,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e9e3faa6da5d0b34ba625ffa87d3bd23, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  myTransform: {fileID: 0}
-  myGO: {fileID: 0}
   didInit: 0
   canControl: 1
-  id: 0
   horz: 0
   vert: 0
   currentAIState: 6
@@ -638,11 +635,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e9e3faa6da5d0b34ba625ffa87d3bd23, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  myTransform: {fileID: 0}
-  myGO: {fileID: 0}
   didInit: 0
   canControl: 1
-  id: 0
   horz: 0
   vert: 0
   currentAIState: 6
@@ -1212,11 +1206,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e9e3faa6da5d0b34ba625ffa87d3bd23, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  myTransform: {fileID: 0}
-  myGO: {fileID: 0}
   didInit: 0
   canControl: 1
-  id: 0
   horz: 0
   vert: 0
   currentAIState: 1
@@ -1521,7 +1512,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5a383ddda72744535a77726ed0b41bcb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  radiusGismo: 0.33
+  radiusGismo: 0.3
   closed: 1
   shouldReverse: 0
 --- !u!4 &1728666429
@@ -1870,7 +1861,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5a383ddda72744535a77726ed0b41bcb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  radiusGismo: 0.33
+  radiusGismo: 0.3
   closed: 1
   shouldReverse: 0
 --- !u!1 &2035135604
@@ -1985,10 +1976,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 52bfe59b36a8d4e759e3a4d1fb93f261, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Up: 0
-  Down: 0
-  Left: 0
-  Right: 0
   Fire1: 0
   Slot1: 0
   Slot2: 0
@@ -2002,7 +1989,6 @@ MonoBehaviour:
   vert: 0
   horz: 0
   shouldRespawn: 0
-  TEMPVec3: {x: 0, y: 0, z: 0}
 --- !u!58 &2129166355
 CircleCollider2D:
   m_ObjectHideFlags: 0

@@ -1,17 +1,17 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 public class PlayerMover : MonoBehaviour {
 
-	public float moveSpeed = 0.5f;
+	[SerializeField]
+	private float moveSpeed = 0.5f;
+	[SerializeField]
+	private Keyboard_Input keyboardInput; 
+	[SerializeField]
+	private Vector3 moveDirection;
+	[SerializeField]
+	private Transform myTransform;
 
-	public Keyboard_Input keyboardInput; 
-
-	public Vector3 moveDirection;
-
-	public Transform myTransform;
-
+	// main event
 	void Awake () {
 		// cache a ref to our transform
 		myTransform= transform;

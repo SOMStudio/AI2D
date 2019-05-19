@@ -1,5 +1,4 @@
 using UnityEngine;
-using System.Collections;
 using AIStates;
 
 [AddComponentMenu("Base/AI Controller")]
@@ -11,60 +10,81 @@ public class BaseAIController2D : ExtendedCustomMonoBehaviour2D {
 	private Vector3 moveVec;
 
 	[Header("Result direction Move")]
-	public float horz;
-	public float vert;
+	[SerializeField]
+	protected float horz;
+	[SerializeField]
+	protected float vert;
 
 	[Header("AIState")]
-	public AIState currentAIState;
+	[SerializeField]
+	protected AIState currentAIState;
 	private int obstacleFinderResult;
 
 	[Header("Layer block see + layer Player")]
-	public LayerMask layerBlockSee;
+	[SerializeField]
+	protected LayerMask layerBlockSee;
 
 	[Header("Settings for Target")]
-	public Transform followTarget;
-	public LayerMask layerBlockTargey;
-	public bool seeTarget = false;
-	public float wallAvoidDistance= 1f;
-	public float minChaseDistance= 0.5f;
-	public float maxChaseDistance= 3.0f;
+	[SerializeField]
+	protected Transform followTarget;
+	[SerializeField]
+	protected LayerMask layerBlockTargey;
+	[SerializeField]
+	protected bool seeTarget = false;
+	[SerializeField]
+	protected float wallAvoidDistance= 1f;
+	[SerializeField]
+	protected float minChaseDistance= 0.5f;
+	[SerializeField]
+	protected float maxChaseDistance= 3.0f;
 	private float distanceToChaseTarget;
 	
 	[Header("Settings for Waypoints")]
-	public Waypoints_Controller myWayControl;
-	public LayerMask layerBlockWaypoint;
-	public bool seePoint = false;
-	public int currentWaypointNum;
-	public float waypointDistance= 5f;
-	public float pathSmoothing= 2f;
-	public bool shouldReversePathFollowing;
-	public bool loopPath;
-	public bool destroyAtEndOfWaypoints;
-	public bool startAtFirstWaypoint;
+	[SerializeField]
+	protected Waypoints_Controller myWayControl;
+	[SerializeField]
+	protected LayerMask layerBlockWaypoint;
+	[SerializeField]
+	protected bool seePoint = false;
+	[SerializeField]
+	protected int currentWaypointNum;
+	[SerializeField]
+	protected float waypointDistance= 5f;
+	[SerializeField]
+	protected float pathSmoothing= 2f;
+	[SerializeField]
+	protected bool shouldReversePathFollowing;
+	[SerializeField]
+	protected bool loopPath;
+	[SerializeField]
+	protected bool destroyAtEndOfWaypoints;
+	[SerializeField]
+	protected bool startAtFirstWaypoint;
 	private int totalWaypoints;
 	private Transform currentWaypointTransform;
 	private Vector3 nodePosition;
 	private Vector3 myPosition;
 	private float currentWayDist;
 	private bool reachedLastWaypoint;
-	
-	public void Start ()
-	{
-		Init ();
-	}
-	
-	public virtual void Init () 
-	{				
-		// cache ref to gameObject
-		myGO= gameObject;
-		
-		// cache ref to transform
-		myTransform= transform;
 
-		// init done!
-		didInit= true;
+	private int obstacleFinding;
+
+	// main event
+	void Update () 
+	{
+		// make sure we have initialized before doing anything
+		if( !didInit )
+			Init ();
+
+		// check to see if we're supposed to be controlling the player
+		if( !canControl )
+			return;
+
+		// do AI updates
+		UpdateAI();
 	}
-	
+
+	// main logic
 	public void SetAIControl( bool state )
 	{
 		canControl = state;
@@ -74,27 +94,27 @@ public class BaseAIController2D : ExtendedCustomMonoBehaviour2D {
 	
 	public void SetWallAvoidDistance( float aNum )
 	{
-		wallAvoidDistance= aNum;
+		wallAvoidDistance = aNum;
 	}
 	
 	public void SetWaypointDistance( float aNum )
 	{
-		waypointDistance= aNum;
+		waypointDistance = aNum;
 	}
 	
 	public void SetMinChaseDistance( float aNum )
 	{
-		minChaseDistance= aNum;
+		minChaseDistance = aNum;
 	}
 	
 	public void SetMaxChaseDistance( float aNum )
 	{
-		maxChaseDistance= aNum;
+		maxChaseDistance = aNum;
 	}
 	
 	public void SetPathSmoothing( float aNum )
 	{
-		pathSmoothing= aNum;
+		pathSmoothing = aNum;
 	}
 	
 	// -----------------------------------------
@@ -102,39 +122,28 @@ public class BaseAIController2D : ExtendedCustomMonoBehaviour2D {
 	public virtual void SetAIState( AIState newState )
 	{
 		// update AI state
-		currentAIState= newState;
+		currentAIState = newState;
+	}
+
+	public AIState GetAIState() {
+		return currentAIState;
 	}
 	
 	public virtual void SetChaseTarget( Transform theTransform )
 	{
 		// set a target for this AI to chase, if required
-		followTarget= theTransform;
+		followTarget = theTransform;
 	}
 	
-	public virtual void Update () 
-	{
-		// make sure we have initialized before doing anything
-		if( !didInit )
-			Init ();
-		
-		// check to see if we're supposed to be controlling the player
-		if( !canControl )
-			return;
-		
-		// do AI updates
-		UpdateAI();
-	}  
-	
-	public virtual void UpdateAI()
+	protected virtual void UpdateAI()
 	{
 		// reset our inputs
 		horz = moveVec.x;
 		vert = moveVec.y;
 		
-		int obstacleFinderResult= IsObstacleAhead();
+		int obstacleFinderResult = IsObstacleAhead ();
 		
-		switch( currentAIState )
-		{
+		switch (currentAIState) {
 		// -----------------------------
 		case AIState.moving_looking_for_target:
 			// look for chase target
@@ -217,20 +226,18 @@ public class BaseAIController2D : ExtendedCustomMonoBehaviour2D {
 		case AIState.backing_up_looking_for_target:
 			
 			// look for chase target
-			if( followTarget!=null )
-				LookAroundFor( followTarget );
+			if (followTarget != null)
+				LookAroundFor (followTarget);
 			
 			// backing up
 			MoveBack ();
 			
-			if( obstacleFinderResult < 3 )
-			{
+			if (obstacleFinderResult < 3) {
 				// now we've backed up, lets randomize whether to go left or right
-				if( Random.Range (0,100)>50 )
-				{
-					SetAIState( AIState.stopped_turning_left );	
+				if (Random.Range (0, 100) > 50) {
+					SetAIState (AIState.stopped_turning_left);	
 				} else {
-					SetAIState( AIState.stopped_turning_right );							
+					SetAIState (AIState.stopped_turning_right);							
 				}
 			}
 			break;
@@ -243,11 +250,10 @@ public class BaseAIController2D : ExtendedCustomMonoBehaviour2D {
 			if (moveVec.magnitude > 0.5f) {
 				moveVec *= (1 - Time.deltaTime);
 			}
-			TurnLeft();
+			TurnLeft ();
 			
-			if( obstacleFinderResult==0 )
-			{
-				SetAIState( AIState.moving_looking_for_target );	
+			if (obstacleFinderResult == 0) {
+				SetAIState (AIState.moving_looking_for_target);	
 			}
 			break;
 			
@@ -263,16 +269,15 @@ public class BaseAIController2D : ExtendedCustomMonoBehaviour2D {
 			TurnRight ();
 			
 			// check results from looking, to see if path ahead is clear
-			if( obstacleFinderResult==0 )
-			{
-				SetAIState( AIState.moving_looking_for_target );	
+			if (obstacleFinderResult == 0) {
+				SetAIState (AIState.moving_looking_for_target);	
 			}
 			break;
 		case AIState.paused_looking_for_target:
 			// standing still, with looking for chase target
 			// look for chase target
-			if( followTarget!=null )
-				LookAroundFor( followTarget );
+			if (followTarget != null)
+				LookAroundFor (followTarget);
 			break;
 		
 		case AIState.translate_along_waypoint_path:
@@ -299,10 +304,10 @@ public class BaseAIController2D : ExtendedCustomMonoBehaviour2D {
 			}
 
 			// make sure we have been initialized before trying to access waypoints
-			if( !didInit && !reachedLastWaypoint )
+			if (!didInit && !reachedLastWaypoint)
 				return;
 			
-			UpdateWaypoints();
+			UpdateWaypoints ();
 			
 			// move AI
 			if (currentWaypointTransform != null) {
@@ -321,7 +326,7 @@ public class BaseAIController2D : ExtendedCustomMonoBehaviour2D {
 		}
 	}
 	
-	public virtual void TurnLeft ()
+	protected virtual void TurnLeft ()
 	{
 		moveVec = (Quaternion.Euler (0, 0, -1 * pathSmoothing) * moveVec);
 
@@ -329,7 +334,7 @@ public class BaseAIController2D : ExtendedCustomMonoBehaviour2D {
 		vert = moveVec.y;
 	}
 	
-	public virtual void TurnRight ()
+	protected virtual void TurnRight ()
 	{
 		moveVec = (Quaternion.Euler (0, 0, 1 * pathSmoothing) * moveVec);
 
@@ -337,19 +342,19 @@ public class BaseAIController2D : ExtendedCustomMonoBehaviour2D {
 		vert = moveVec.y;
 	}
 	
-	public virtual void MoveForward ()
+	protected virtual void MoveForward ()
 	{
 		horz = moveVec.x;
 		vert = moveVec.y;
 	}
 	
-	public virtual void MoveBack ()
+	protected virtual void MoveBack ()
 	{
 		horz = - moveVec.x;
 		vert = - moveVec.y;
 	}
 
-	public virtual void NoMove ()
+	protected virtual void NoMove ()
 	{
 		vert= 0;
 	}
@@ -358,10 +363,9 @@ public class BaseAIController2D : ExtendedCustomMonoBehaviour2D {
 	{
 		// here we do a quick check to test the distance between AI and target. If it's higher than
 		// our maxChaseDistance variable, we drop out of chase mode and go back to patrolling.
-		if( Vector3.Distance( myTransform.position, aTransform.position ) < maxChaseDistance )
-		{
+		if (Vector3.Distance (myTransform.position, aTransform.position) < maxChaseDistance) {
 			// check to see if the target is visible before going into chase mode
-			seeTarget = CanSee( followTarget );
+			seeTarget = CanSee (followTarget);
 			if (seeTarget == true) {
 				// set our state to chase the target
 				SetAIState (AIState.chasing_target);
@@ -369,29 +373,26 @@ public class BaseAIController2D : ExtendedCustomMonoBehaviour2D {
 		}
 	}
 	
-	private int obstacleFinding;
-	
-	public virtual int IsObstacleAhead()
+	protected virtual int IsObstacleAhead()
 	{
-		int obstacleHitType=0;
+		int obstacleHitType = 0;
 		
 		// quick check to make sure that myTransform has been set
-		if( myTransform==null )
-		{
+		if (myTransform == null) {
 			return 0;
 		}
 		
 		// draw this raycast so we can see what it is doing
-		Vector3 left45Dir = (Quaternion.Euler(0, 0, 45) * moveVec);
-		Vector3 right45Dir = (Quaternion.Euler(0, 0, -45) * moveVec);
-		Debug.DrawRay(myTransform.position + left45Dir.normalized * minChaseDistance, left45Dir * wallAvoidDistance);
-		Debug.DrawRay(myTransform.position + right45Dir.normalized * minChaseDistance, right45Dir * wallAvoidDistance);
+		Vector3 left45Dir = (Quaternion.Euler (0, 0, 45) * moveVec);
+		Vector3 right45Dir = (Quaternion.Euler (0, 0, -45) * moveVec);
+		Debug.DrawRay (myTransform.position + left45Dir.normalized * minChaseDistance, left45Dir * wallAvoidDistance);
+		Debug.DrawRay (myTransform.position + right45Dir.normalized * minChaseDistance, right45Dir * wallAvoidDistance);
 
 		// lets have a debug line to check the distance where we look
-		Debug.DrawRay( myTransform.position + moveVec.normalized * minChaseDistance , moveVec.normalized * maxChaseDistance );
+		Debug.DrawRay (myTransform.position + moveVec.normalized * minChaseDistance, moveVec.normalized * maxChaseDistance);
 
 		// cast a ray out forward from our AI and put the 'result' into the variable named hit
-		RaycastHit2D hitLeft = Physics2D.Raycast( myTransform.position + left45Dir.normalized * minChaseDistance, left45Dir, wallAvoidDistance, layerBlockTargey);
+		RaycastHit2D hitLeft = Physics2D.Raycast (myTransform.position + left45Dir.normalized * minChaseDistance, left45Dir, wallAvoidDistance, layerBlockTargey);
 		if (hitLeft.transform != null) {
 			if (hitLeft.transform.gameObject != myGO) {
 				// obstacle
@@ -400,7 +401,7 @@ public class BaseAIController2D : ExtendedCustomMonoBehaviour2D {
 			}
 		}
 
-		RaycastHit2D hitRight = Physics2D.Raycast( myTransform.position + right45Dir.normalized * minChaseDistance, right45Dir, wallAvoidDistance, layerBlockTargey);
+		RaycastHit2D hitRight = Physics2D.Raycast (myTransform.position + right45Dir.normalized * minChaseDistance, right45Dir, wallAvoidDistance, layerBlockTargey);
 		if (hitRight.transform != null) {
 			if (hitRight.transform.gameObject != myGO) {
 				// obstacle
@@ -417,9 +418,9 @@ public class BaseAIController2D : ExtendedCustomMonoBehaviour2D {
 		return obstacleHitType;
 	}
 	
-	public void TurnTowardTarget( Transform aTarget )
+	private void TurnTowardTarget( Transform aTarget )
 	{
-		if(aTarget==null)
+		if (aTarget == null)
 			return;
 
 		tempDirVec = Vector3.Normalize (aTarget.position - myTransform.position);
@@ -430,20 +431,18 @@ public class BaseAIController2D : ExtendedCustomMonoBehaviour2D {
 		}
 	}
 	
-	public bool CanSee( Transform aTarget )
+	private bool CanSee( Transform aTarget )
 	{
 		// first, let's get a vector to use for raycasting by subtracting the target position from our AI position
-		tempDirVec=Vector3.Normalize( aTarget.position - myTransform.position );
+		tempDirVec = Vector3.Normalize (aTarget.position - myTransform.position);
 
 		// cast a ray from our AI, out toward the target passed in (use the tempDirVec magnitude as the distance to cast)
-		RaycastHit2D hit = Physics2D.Raycast( myTransform.position + ( minChaseDistance * tempDirVec ), tempDirVec, maxChaseDistance, layerBlockSee);
-		if( hit.transform != null )
-		{
+		RaycastHit2D hit = Physics2D.Raycast (myTransform.position + (minChaseDistance * tempDirVec), tempDirVec, maxChaseDistance, layerBlockSee);
+		if (hit.transform != null) {
 			// check to see if we hit the target
-			if( hit.transform.gameObject == aTarget.gameObject )
-			{
+			if (hit.transform.gameObject == aTarget.gameObject) {
 				//debugin line when we see target
-				Debug.DrawLine( myTransform.position, aTarget.position );
+				Debug.DrawLine (myTransform.position, aTarget.position);
 
 				return true;
 			}
@@ -453,7 +452,7 @@ public class BaseAIController2D : ExtendedCustomMonoBehaviour2D {
 		return false;
 	}
 
-	public bool CanSeePoint( Transform aTarget )
+	private bool CanSeePoint( Transform aTarget )
 	{
 		// first, let's get a vector to use for raycasting by subtracting the target position from our AI position
 		Vector3 tempVect = aTarget.position - myTransform.position;
@@ -461,9 +460,8 @@ public class BaseAIController2D : ExtendedCustomMonoBehaviour2D {
 		tempDirVec = Vector3.Normalize (tempVect);
 
 		// cast a ray from our AI, out toward the target passed in (use the tempDirVec magnitude as the distance to cast)
-		RaycastHit2D hit = Physics2D.Raycast( myTransform.position + ( minChaseDistance * tempDirVec ), tempDirVec, magTempVec, layerBlockWaypoint);
-		if( hit.transform == null )
-		{
+		RaycastHit2D hit = Physics2D.Raycast (myTransform.position + (minChaseDistance * tempDirVec), tempDirVec, magTempVec, layerBlockWaypoint);
+		if (hit.transform == null) {
 			return true;
 		}
 
@@ -473,31 +471,29 @@ public class BaseAIController2D : ExtendedCustomMonoBehaviour2D {
 
 	public void SetWayController( Waypoints_Controller aControl )
 	{
-		myWayControl=aControl;
-		aControl=null;
+		myWayControl = aControl;
+		aControl = null;
 		
 		// grab total waypoints
-		totalWaypoints = myWayControl.GetTotal();
+		totalWaypoints = myWayControl.GetTotal ();
 		
 		// make sure that if you use SetReversePath to set shouldReversePathFollowing that you
 		// call SetReversePath for the first time BEFORE SetWayController, otherwise it won't set the first waypoint correctly
 		
-		if( shouldReversePathFollowing )
-		{
-			currentWaypointNum= totalWaypoints-1;
+		if (shouldReversePathFollowing) {
+			currentWaypointNum = totalWaypoints - 1;
 		} else {
-			currentWaypointNum= 0;
+			currentWaypointNum = 0;
 		}
 		
-		Init();
+		Init ();
 		
 		// get the first waypoint from the waypoint controller
-		currentWaypointTransform= myWayControl.GetWaypoint( currentWaypointNum );
+		currentWaypointTransform = myWayControl.GetWaypoint (currentWaypointNum);
 		
-		if( startAtFirstWaypoint )
-		{
+		if (startAtFirstWaypoint) {
 			// position at the currentWaypointTransform position
-			myTransform.position= currentWaypointTransform.position;
+			myTransform.position = currentWaypointTransform.position;
 		}
 	}
 	
@@ -511,74 +507,68 @@ public class BaseAIController2D : ExtendedCustomMonoBehaviour2D {
 		pathSmoothing= aRate;
 	}
 	
-	void UpdateWaypoints()
+	private void UpdateWaypoints()
 	{
 		// If we don't have a waypoint controller, we safely drop out
-		if( myWayControl==null )
+		if (myWayControl == null)
 			return;
 		
-		if( reachedLastWaypoint && destroyAtEndOfWaypoints )
-		{
+		if (reachedLastWaypoint && destroyAtEndOfWaypoints) {
 			// destroy myself(!)
-			Destroy( gameObject );
+			Destroy (gameObject);
 			return;
-		} else if( reachedLastWaypoint )
-		{
-			currentWaypointNum= 0;
-			reachedLastWaypoint= false;
+		} else if (reachedLastWaypoint) {
+			currentWaypointNum = 0;
+			reachedLastWaypoint = false;
 		}
 		
 		// because of the order that scripts run and are initialised, it is possible for this function
 		// to be called before we have actually finished running the waypoints initialization, which
 		// means we need to drop out to avoid doing anything silly or before it breaks the game.
-		if( totalWaypoints==0 )
-		{
+		if (totalWaypoints == 0) {
 			// grab total waypoints
-			totalWaypoints= myWayControl.GetTotal();
+			totalWaypoints = myWayControl.GetTotal ();
 		}
 	
-		if( currentWaypointTransform==null )
-		{
+		if (currentWaypointTransform == null) {
 			// grab our transform reference from the waypoint controller
-			currentWaypointTransform= myWayControl.GetWaypoint( currentWaypointNum );
+			currentWaypointTransform = myWayControl.GetWaypoint (currentWaypointNum);
 			return;
 		}
 		
 		// now we check to see if we are close enough to the current waypoint
 		// to advance on to the next one
 	
-		myPosition= myTransform.position;
-		myPosition.z= 0;
+		myPosition = myTransform.position;
+		myPosition.z = 0;
 	
 		// get waypoint position and 'flatten' it
-		nodePosition= currentWaypointTransform.position;
-		nodePosition.z= 0;
+		nodePosition = currentWaypointTransform.position;
+		nodePosition.z = 0;
 	
 		// check distance from this to the waypoint
 		currentWayDist = Vector3.Distance (nodePosition, myPosition);
 	
-		if ( currentWayDist < waypointDistance ) {
+		if (currentWayDist < waypointDistance) {
 			// we are close to the current node, so let's move on to the next one!
 			
-			if( shouldReversePathFollowing )
-			{
+			if (shouldReversePathFollowing) {
 				currentWaypointNum--;
 				// now check to see if we have been all the way around
-				if( currentWaypointNum<0 ){
+				if (currentWaypointNum < 0) {
 					// just incase it gets referenced before we are destroyed, let's keep it to a safe index number
-					currentWaypointNum= 0;
+					currentWaypointNum = 0;
 					// completed the route!
-					reachedLastWaypoint= true;
+					reachedLastWaypoint = true;
 					// if we are set to loop, reset the currentWaypointNum to 0
-					if(loopPath)
-					{
-						currentWaypointNum= totalWaypoints - 1;
+					if (loopPath) {
+						currentWaypointNum = totalWaypoints - 1;
 
 						// grab our transform reference from the waypoint controller
-						currentWaypointTransform= myWayControl.GetWaypoint( currentWaypointNum );
+						currentWaypointTransform = myWayControl.GetWaypoint (currentWaypointNum);
 						
 						// the route keeps going in a loop, so we don't want reachedLastWaypoint to ever become true
-						reachedLastWaypoint= false;
+						reachedLastWaypoint = false;
 					}
 					// drop out of this function before we grab another waypoint into currentWaypointTransform, as
 					// we don't need one and the index may be invalid
@@ -587,19 +577,18 @@ public class BaseAIController2D : ExtendedCustomMonoBehaviour2D {
 			} else {
 				currentWaypointNum++;
 				// now check to see if we have been all the way around
-				if( currentWaypointNum>=totalWaypoints ){
+				if (currentWaypointNum >= totalWaypoints) {
 					// completed the route!
-					reachedLastWaypoint= true;
+					reachedLastWaypoint = true;
 					// if we are set to loop, reset the currentWaypointNum to 0
-					if(loopPath)
-					{
-						currentWaypointNum= 0;
+					if (loopPath) {
+						currentWaypointNum = 0;
 
 						// grab our transform reference from the waypoint controller
-						currentWaypointTransform= myWayControl.GetWaypoint( currentWaypointNum );
+						currentWaypointTransform = myWayControl.GetWaypoint (currentWaypointNum);
 						
 						// the route keeps going in a loop, so we don't want reachedLastWaypoint to ever become true
-						reachedLastWaypoint= false;
+						reachedLastWaypoint = false;
 					}
 					// drop out of this function before we grab another waypoint into currentWaypointTransform, as
 					// we don't need one and the index may be invalid
@@ -608,7 +597,7 @@ public class BaseAIController2D : ExtendedCustomMonoBehaviour2D {
 			}
 
 			// grab our transform reference from the waypoint controller
-			currentWaypointTransform= myWayControl.GetWaypoint( currentWaypointNum );
+			currentWaypointTransform = myWayControl.GetWaypoint (currentWaypointNum);
 		}
 	}
 	

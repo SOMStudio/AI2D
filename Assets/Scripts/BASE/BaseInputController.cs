@@ -1,42 +1,47 @@
 using UnityEngine;
-using System.Collections;
 
 [AddComponentMenu("Base/Input Controller")]
 
 public class BaseInputController : MonoBehaviour {
-	
-	// directional buttons
-	public bool Up;
-	public bool Down;
-	public bool Left;
-	public bool Right;
-	
-	// fire / action buttons
-	public bool Fire1;
-	
-	// weapon slots
-	public bool Slot1;
-	public bool Slot2;
-	public bool Slot3;
-	public bool Slot4;
-	public bool Slot5;
-	public bool Slot6;
-	public bool Slot7;
-	public bool Slot8;
-	public bool Slot9;
-	
-	public float vert;
-	public float horz;
-	public bool shouldRespawn;
-	
-	public Vector3 TEMPVec3;
-	private Vector3 zeroVector = new Vector3(0,0,0);
-	
-	public virtual void CheckInput ()
+
+	[Header("Fire")]
+	[SerializeField]
+	protected bool Fire1;
+
+	[Header("Weapon Slot")]
+	[SerializeField]
+	protected bool Slot1;
+	[SerializeField]
+	protected bool Slot2;
+	[SerializeField]
+	protected bool Slot3;
+	[SerializeField]
+	protected bool Slot4;
+	[SerializeField]
+	protected bool Slot5;
+	[SerializeField]
+	protected bool Slot6;
+	[SerializeField]
+	protected bool Slot7;
+	[SerializeField]
+	protected bool Slot8;
+	[SerializeField]
+	protected bool Slot9;
+
+	[Header("Shift dir")]
+	[SerializeField]
+	protected float vert;
+	[SerializeField]
+	protected float horz;
+	[SerializeField]
+	protected bool shouldRespawn;
+
+	// main logic
+	protected virtual void CheckInput ()
 	{	
 		// override with your own code to deal with input
-		horz=Input.GetAxis ("Horizontal");
-		vert=Input.GetAxis ("Vertical");
+		horz = Input.GetAxis ("Horizontal");
+		vert = Input.GetAxis ("Vertical");
 	}
 	
 	public virtual float GetHorizontal()
@@ -50,7 +55,12 @@ public class BaseInputController : MonoBehaviour {
 		// returns our cached vertical input axis value
 		return vert;
 	}
-	
+
+	public bool Up {get { return vert>0; }}
+	public bool Down {get { return vert<0; }}
+	public bool Right {get { return horz>0; }}
+	public bool Left {get { return horz<0; }}
+
 	public virtual bool GetFire()
 	{
 		return Fire1;
@@ -63,14 +73,13 @@ public class BaseInputController : MonoBehaviour {
 	
 	public virtual Vector3 GetMovementDirectionVector()
 	{
-		// temp vector for movement dir gets set to the value of an otherwise unused vector that always have the value of 0,0,0
-		TEMPVec3=zeroVector;
+		var res = Vector3.zero;
 		
-		TEMPVec3.x=horz;
-		TEMPVec3.y=vert;
+		res.x = horz;
+		res.y = vert;
 
 		// return the movement vector
-		return TEMPVec3;
+		return res;
 	}
 
 }
