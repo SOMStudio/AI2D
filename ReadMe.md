@@ -22,6 +22,6 @@ Realize movement with artificial intelligence (further opponent).
 ## Implemented:
 All
 
-## Unity 5.6.2
+## Unity 2019
 
 ![AI2D](screenshot.png)
