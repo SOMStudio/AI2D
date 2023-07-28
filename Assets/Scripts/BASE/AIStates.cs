@@ -1,5 +1,3 @@
-using UnityEngine;
-
 namespace AIStates
 {
 	public enum AIState
@@ -13,5 +11,4 @@ namespace AIStates
 		translate_along_waypoint_path,
 		paused_no_target,
 	}
-	
 }

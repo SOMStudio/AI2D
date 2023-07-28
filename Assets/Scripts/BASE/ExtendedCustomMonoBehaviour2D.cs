@@ -1,49 +1,37 @@
 using UnityEngine;
 
-public class ExtendedCustomMonoBehaviour2D : MonoBehaviour 
+public class ExtendedCustomMonoBehaviour2D : MonoBehaviour
 {
-	[Header("Base")]
-	[SerializeField]
-	protected bool didInit;
-	[SerializeField]
-	protected bool canControl;
-	
-	protected int id;
+	[Header("Base")] [SerializeField] protected bool didInit;
+	[SerializeField] protected bool canControl;
 
 	protected Transform myTransform;
 	protected GameObject myGO;
 	protected Rigidbody2D myBody;
 
-	protected Vector3 tempVEC;
-	protected Transform tempTR;
-
-	// main events
-	void Start () {
-		Init ();
+	private void Start()
+	{
+		Init();
 	}
 
-	// main Logic
-
-	/// <summary>
-	/// Init main instance (myTransform, myGO, myBody2D), def. in Start.
-	/// </summary>
-	public virtual void Init() {
+	protected virtual void Init()
+	{
 		// cache refs to our transform and gameObject
-		if (!myTransform) {
+		if (!myTransform)
+		{
 			myTransform = transform;
 		}
-		if (!myGO) {
+
+		if (!myGO)
+		{
 			myGO = gameObject;
 		}
-		if (!myBody) {
-			myBody = GetComponent<Rigidbody2D> ();
+
+		if (!myBody)
+		{
+			myBody = GetComponent<Rigidbody2D>();
 		}
 
 		didInit = true;
-	}
-
-	public virtual void SetID( int anID )
-	{
-		id = anID;
 	}
 }
