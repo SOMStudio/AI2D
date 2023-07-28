@@ -10,7 +10,7 @@ Realize movement with artificial intelligence (further opponent).
 3) An enemy can be in two permanent states: "search" (random motion), "patrolling" (movement in a given path)
 4) The opponent has a distance to which he sees the player, if at this distance he changes the state to: "persecution" (player)
 5) If the player is lost (out of a distance vision) to change to the default state: "search", "patrolling"
-6) Realize without Navesh Unity
+6) Realize without NavMesh Unity
 7) Control the player with the keys: left, right, top, bottom
 
 ## Additionally:
