@@ -23,20 +23,17 @@ public class BaseInputController : MonoBehaviour
 	
 	protected virtual void CheckInput()
 	{
-		// override with your own code to deal with input
 		horz = Input.GetAxis("Horizontal");
 		vert = Input.GetAxis("Vertical");
 	}
 
 	public virtual float GetHorizontal()
 	{
-		// returns our cached horizontal input axis value
 		return horz;
 	}
 
 	public virtual float GetVertical()
 	{
-		// returns our cached vertical input axis value
 		return vert;
 	}
 
@@ -76,8 +73,7 @@ public class BaseInputController : MonoBehaviour
 
 		res.x = horz;
 		res.y = vert;
-
-		// return the movement vector
+		
 		return res;
 	}
 }

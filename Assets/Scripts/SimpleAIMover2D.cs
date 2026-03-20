@@ -13,10 +13,8 @@ public class SimpleAIMover2D : MonoBehaviour
 
 	private void Awake()
 	{
-		// cache a ref to our transform
 		myTransform = transform;
-
-		// if it hasn't been set in the editor, let's try and find it on this transform
+		
 		if (AIController == null) AIController = myTransform.GetComponent<BaseAIController2D>();
 	}
 
