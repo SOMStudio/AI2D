@@ -1,6 +1,6 @@
 # AI2D (artificial intelligence 2D)
 
-Realize movement with artificial intelligence (further opponent).
+Simple AI movement logic for 2D games.
 
 ## Tasks:
 1) Realize the game on primitive objects, the basic logic of artificial intelligence:
@@ -14,10 +14,12 @@ Realize movement with artificial intelligence (further opponent).
 7) Control the player with the keys: left, right, top, bottom
 
 ## Additionally:
-1) Add to the scene obstacles that opponents must overcome and which block the player:
+1) Add to the scene obstacles that opponents must overcome and which block the player vision:
 - static (walls)
-- denamic (moving walls or dor)
+- denamic (moving walls or doors)
 2) Different speeds for different enemy states: "search", "patrolling", "pursuing"
+3) Visual raycast-system for developers (in edit mode)
+4) Visual patrolling-system for developers (in edit mode)
 
 ## Implemented:
 All
