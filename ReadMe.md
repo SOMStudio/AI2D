@@ -1,6 +1,6 @@
 # AI2D (artificial intelligence 2D)
 
-Realize movement with artificial intelligence (further opponent).
+Implement the movement using artificial intelligence (for the opponent).
 
 ## Tasks:
 1) Realize the game on primitive objects, the basic logic of artificial intelligence:
