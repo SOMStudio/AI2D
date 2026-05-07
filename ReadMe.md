@@ -1,14 +1,14 @@
 # AI2D (artificial intelligence 2D)
 
-Simple AI movement logic for 2D games.
+Simple AI enemy movement logic for 2D games.
 
 ## Tasks:
 1) Realize the game on primitive objects, the basic logic of artificial intelligence:
 - the player: a green circle
-- opponent: red circle
-2) There are boundaries of the playing field for which the opponent can not go out
+- enemy: red circle
+2) There are boundaries of the playing field for which the enemy can not go out
 3) An enemy can be in two permanent states: "search" (random motion), "patrolling" (movement in a given path)
-4) The opponent has a distance to which he sees the player, if at this distance he changes the state to: "persecution" (player)
+4) The enemy has a distance to which he sees the player, if at this distance he changes the state to: "pursuing" (player)
 5) If the player is lost (out of a distance vision) to change to the default state: "search", "patrolling"
 6) Realize without NavMesh Unity
 7) Control the player with the keys: left, right, top, bottom
@@ -18,8 +18,8 @@ Simple AI movement logic for 2D games.
 - static (walls)
 - denamic (moving walls or doors)
 2) Different speeds for different enemy states: "search", "patrolling", "pursuing"
-3) Visual raycast-system for developers (in edit mode)
-4) Visual patrolling-system for developers (in edit mode)
+3) Visual enemy moving ray-system for developers (in edit mode)
+4) Visual enemy patroling waypoint-system for developers (in edit mode)
 
 ## Implemented:
 All
