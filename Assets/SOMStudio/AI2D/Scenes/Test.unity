@@ -131,7 +131,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 25543457}
-  m_Layer: 10
+  m_Layer: 0
   m_Name: Point3
   m_TagString: Untagged
   m_Icon: {fileID: 8220585740371884164, guid: 0000000000000000d000000000000000, type: 0}
@@ -376,7 +376,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 210044986}
-  m_Layer: 10
+  m_Layer: 0
   m_Name: Point1
   m_TagString: Untagged
   m_Icon: {fileID: 8220585740371884164, guid: 0000000000000000d000000000000000, type: 0}
@@ -407,7 +407,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 273835219}
-  m_Layer: 10
+  m_Layer: 0
   m_Name: Point2
   m_TagString: Untagged
   m_Icon: {fileID: 8220585740371884164, guid: 0000000000000000d000000000000000, type: 0}
@@ -472,7 +472,7 @@ MonoBehaviour:
   followTarget: {fileID: 2129166352}
   layerBlockTarget:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 17408
   seeTarget: 0
   wallAvoidDistance: 1
   minChaseDistance: 0.3
@@ -1653,7 +1653,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1303594732}
-  m_Layer: 10
+  m_Layer: 0
   m_Name: Point2
   m_TagString: Untagged
   m_Icon: {fileID: 8220585740371884164, guid: 0000000000000000d000000000000000, type: 0}
@@ -1815,7 +1815,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1728666429}
   - component: {fileID: 1728666428}
-  m_Layer: 10
+  m_Layer: 0
   m_Name: TragectoryEnemy
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2255,7 +2255,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1864446277}
   - component: {fileID: 1864446278}
-  m_Layer: 10
+  m_Layer: 0
   m_Name: TragectoryDoor
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2303,7 +2303,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2035135605}
-  m_Layer: 10
+  m_Layer: 0
   m_Name: Point1
   m_TagString: Untagged
   m_Icon: {fileID: 8220585740371884164, guid: 0000000000000000d000000000000000, type: 0}
