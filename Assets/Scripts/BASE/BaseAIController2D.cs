@@ -1,40 +1,32 @@
 using UnityEngine;
 using AIStates;
 
-[AddComponentMenu("Base/AI Controller")]
+[AddComponentMenu("SOMStudio/AI2D/Base/BaseAIController2D")]
 public class BaseAIController2D : ExtendedCustomMonoBehaviour2D
 {
-	private Vector3 tempDirVec;
-	private Vector3 moveVec;
+	[Header("Result direction Move")]
+	[SerializeField] protected float horizontal;
+	[SerializeField] protected float vertical;
 
-	[Header("Result direction Move")] [SerializeField]
-	protected float horz;
+	[Header("AIState")]
+	[SerializeField] protected AIState currentAIState;
 
-	[SerializeField] protected float vert;
+	[Header("Layer block see + layer Player")]
+	[SerializeField] protected LayerMask layerBlockSee;
 
-	[Header("AIState")] [SerializeField] protected AIState currentAIState;
-	private int obstacleFinderResult;
-
-	[Header("Layer block see + layer Player")] [SerializeField]
-	protected LayerMask layerBlockSee;
-
-	[Header("Settings for Target")] [SerializeField]
-	protected Transform followTarget;
-
-	[SerializeField] protected LayerMask layerBlockTargey;
+	[Header("Settings for Target")]
+	[SerializeField] protected Transform followTarget;
+	[SerializeField] protected LayerMask layerBlockTarget;
 	[SerializeField] protected bool seeTarget;
 	[SerializeField] protected float wallAvoidDistance = 1f;
 	[SerializeField] protected float minChaseDistance = 0.5f;
 	[SerializeField] protected float maxChaseDistance = 3.0f;
 	
-	private float distanceToChaseTarget;
-
-	[Header("Settings for Waypoints")] [SerializeField]
-	protected Waypoints_Controller myWayControl;
-
+	[Header("Settings for Waypoints")]
+	[SerializeField] protected WaypointsController2D wayController;
 	[SerializeField] protected LayerMask layerBlockWaypoint;
 	[SerializeField] protected bool seePoint;
-	[SerializeField] protected int currentWaypointNum;
+	[SerializeField] protected int currentWaypointNumber;
 	[SerializeField] protected float waypointDistance = 5f;
 	[SerializeField] protected float pathSmoothing = 2f;
 	[SerializeField] protected bool shouldReversePathFollowing;
@@ -42,20 +34,16 @@ public class BaseAIController2D : ExtendedCustomMonoBehaviour2D
 	[SerializeField] protected bool destroyAtEndOfWaypoints;
 	[SerializeField] protected bool startAtFirstWaypoint;
 	
+	private Vector3 moveVector;
+	
+	private float distanceToChaseTarget;
+	
 	private int totalWaypoints;
 	private Transform currentWaypointTransform;
-	private Vector3 nodePosition;
-	private Vector3 myPosition;
-	private float currentWayDist;
 	private bool reachedLastWaypoint;
-
-	private int obstacleFinding;
 
 	private void Update()
 	{
-		if (!didInit)
-			Init();
-		
 		if (!canControl)
 			return;
 		
@@ -110,43 +98,43 @@ public class BaseAIController2D : ExtendedCustomMonoBehaviour2D
 
 	protected virtual void UpdateAI()
 	{
-		horz = moveVec.x;
-		vert = moveVec.y;
+		horizontal = moveVector.x;
+		vertical = moveVector.y;
 
 		int obstacleFinderResult = IsObstacleAhead();
 
 		switch (currentAIState)
 		{
-			case AIState.moving_looking_for_target:
+			case AIState.MovingLookingForTarget:
 				if (followTarget != null)
 					LookAroundFor(followTarget);
 				
 				if (obstacleFinderResult == 1)
 				{
-					SetAIState(AIState.stopped_turning_left);
+					SetAIState(AIState.StoppedTurningLeft);
 				}
 
 				if (obstacleFinderResult == 2)
 				{
-					SetAIState(AIState.stopped_turning_right);
+					SetAIState(AIState.StoppedTurningRight);
 				}
 
 				if (obstacleFinderResult == 3)
 				{
-					SetAIState(AIState.backing_up_looking_for_target);
+					SetAIState(AIState.BackingUpLookingForTarget);
 				}
 
-				if (moveVec.magnitude != 1)
+				if (moveVector.magnitude != 1)
 				{
-					moveVec = Vector3.Lerp(moveVec, moveVec.normalized, Time.deltaTime * pathSmoothing);
+					moveVector = Vector3.Lerp(moveVector, moveVector.normalized, Time.deltaTime * pathSmoothing);
 				}
 
-				if (myWayControl != null)
+				if (wayController != null)
 				{
 					seePoint = CanSeePoint(currentWaypointTransform);
-					if (seePoint == true)
+					if (seePoint)
 					{
-						SetAIState(AIState.translate_along_waypoint_path);
+						SetAIState(AIState.TranslateAlongWaypointPath);
 					}
 					else
 					{
@@ -157,10 +145,9 @@ public class BaseAIController2D : ExtendedCustomMonoBehaviour2D
 				{
 					MoveForward();
 				}
-
 				break;
-			case AIState.chasing_target:
-				if (followTarget == null) SetAIState(AIState.moving_looking_for_target);
+			case AIState.ChasingTarget:
+				if (followTarget == null) SetAIState(AIState.MovingLookingForTarget);
 				
 				TurnTowardTarget(followTarget);
 				
@@ -174,27 +161,25 @@ public class BaseAIController2D : ExtendedCustomMonoBehaviour2D
 				seeTarget = CanSee(followTarget);
 				if (distanceToChaseTarget > maxChaseDistance || seeTarget == false)
 				{
-					if (myWayControl != null)
+					if (wayController != null)
 					{
 						seePoint = CanSeePoint(currentWaypointTransform);
 						if (seePoint)
 						{
-							SetAIState(AIState.translate_along_waypoint_path);
+							SetAIState(AIState.TranslateAlongWaypointPath);
 						}
 						else
 						{
-							SetAIState(AIState.moving_looking_for_target);
+							SetAIState(AIState.MovingLookingForTarget);
 						}
 					}
 					else
 					{
-						SetAIState(AIState.moving_looking_for_target);
+						SetAIState(AIState.MovingLookingForTarget);
 					}
 				}
-
 				break;
-
-			case AIState.backing_up_looking_for_target:
+			case AIState.BackingUpLookingForTarget:
 				if (followTarget != null) LookAroundFor(followTarget);
 				
 				MoveBack();
@@ -203,60 +188,56 @@ public class BaseAIController2D : ExtendedCustomMonoBehaviour2D
 				{
 					if (Random.Range(0, 100) > 50)
 					{
-						SetAIState(AIState.stopped_turning_left);
+						SetAIState(AIState.StoppedTurningLeft);
 					}
 					else
 					{
-						SetAIState(AIState.stopped_turning_right);
+						SetAIState(AIState.StoppedTurningRight);
 					}
 				}
-
 				break;
-			case AIState.stopped_turning_left:
+			case AIState.StoppedTurningLeft:
 				if (followTarget != null)
 					LookAroundFor(followTarget);
 				
-				if (moveVec.magnitude > 0.5f)
+				if (moveVector.magnitude > 0.5f)
 				{
-					moveVec *= (1 - Time.deltaTime);
+					moveVector *= (1 - Time.deltaTime);
 				}
 
 				TurnLeft();
 
 				if (obstacleFinderResult == 0)
 				{
-					SetAIState(AIState.moving_looking_for_target);
+					SetAIState(AIState.MovingLookingForTarget);
 				}
-
 				break;
-
-			case AIState.stopped_turning_right:
+			case AIState.StoppedTurningRight:
 				if (followTarget != null)
 					LookAroundFor(followTarget);
 				
-				if (moveVec.magnitude > 0.5f)
+				if (moveVector.magnitude > 0.5f)
 				{
-					moveVec *= (1 - Time.deltaTime);
+					moveVector *= (1 - Time.deltaTime);
 				}
 
 				TurnRight();
 				
 				if (obstacleFinderResult == 0)
 				{
-					SetAIState(AIState.moving_looking_for_target);
+					SetAIState(AIState.MovingLookingForTarget);
 				}
 
 				break;
-			case AIState.paused_looking_for_target:
+			case AIState.PausedLookingForTarget:
 				if (followTarget != null)
 					LookAroundFor(followTarget);
 				break;
-
-			case AIState.translate_along_waypoint_path:
+			case AIState.TranslateAlongWaypointPath:
 				if (followTarget != null)
 				{
 					LookAroundFor(followTarget);
-					if (currentAIState != AIState.translate_along_waypoint_path)
+					if (currentAIState != AIState.TranslateAlongWaypointPath)
 					{
 						return;
 					}
@@ -267,11 +248,11 @@ public class BaseAIController2D : ExtendedCustomMonoBehaviour2D
 					seePoint = CanSeePoint(currentWaypointTransform);
 					if (seePoint)
 					{
-						SetAIState(AIState.translate_along_waypoint_path);
+						SetAIState(AIState.TranslateAlongWaypointPath);
 					}
 					else
 					{
-						SetAIState(AIState.moving_looking_for_target);
+						SetAIState(AIState.MovingLookingForTarget);
 					}
 				}
 				
@@ -287,10 +268,7 @@ public class BaseAIController2D : ExtendedCustomMonoBehaviour2D
 				}
 
 				break;
-
-			case AIState.paused_no_target:
-				break;
-
+			case AIState.PausedNoTarget:
 			default:
 				break;
 		}
@@ -298,35 +276,35 @@ public class BaseAIController2D : ExtendedCustomMonoBehaviour2D
 
 	protected virtual void TurnLeft()
 	{
-		moveVec = (Quaternion.Euler(0, 0, -1 * pathSmoothing) * moveVec);
+		moveVector = Quaternion.Euler(0, 0, -1 * pathSmoothing) * moveVector;
 
-		horz = moveVec.x;
-		vert = moveVec.y;
+		horizontal = moveVector.x;
+		vertical = moveVector.y;
 	}
 
 	protected virtual void TurnRight()
 	{
-		moveVec = (Quaternion.Euler(0, 0, 1 * pathSmoothing) * moveVec);
+		moveVector = Quaternion.Euler(0, 0, 1 * pathSmoothing) * moveVector;
 
-		horz = moveVec.x;
-		vert = moveVec.y;
+		horizontal = moveVector.x;
+		vertical = moveVector.y;
 	}
 
 	protected virtual void MoveForward()
 	{
-		horz = moveVec.x;
-		vert = moveVec.y;
+		horizontal = moveVector.x;
+		vertical = moveVector.y;
 	}
 
 	protected virtual void MoveBack()
 	{
-		horz = -moveVec.x;
-		vert = -moveVec.y;
+		horizontal = -moveVector.x;
+		vertical = -moveVector.y;
 	}
 
 	protected virtual void NoMove()
 	{
-		vert = 0;
+		vertical = 0;
 	}
 
 	public virtual void LookAroundFor(Transform aTransform)
@@ -334,9 +312,9 @@ public class BaseAIController2D : ExtendedCustomMonoBehaviour2D
 		if (Vector3.Distance(myTransform.position, aTransform.position) < maxChaseDistance)
 		{
 			seeTarget = CanSee(followTarget);
-			if (seeTarget == true)
+			if (seeTarget)
 			{
-				SetAIState(AIState.chasing_target);
+				SetAIState(AIState.ChasingTarget);
 			}
 		}
 	}
@@ -350,29 +328,29 @@ public class BaseAIController2D : ExtendedCustomMonoBehaviour2D
 			return 0;
 		}
 		
-		Vector3 left45Dir = (Quaternion.Euler(0, 0, 45) * moveVec);
-		Vector3 right45Dir = (Quaternion.Euler(0, 0, -45) * moveVec);
+		Vector3 left45Dir = (Quaternion.Euler(0, 0, 45) * moveVector);
+		Vector3 right45Dir = (Quaternion.Euler(0, 0, -45) * moveVector);
 		Debug.DrawRay(myTransform.position + left45Dir.normalized * minChaseDistance, left45Dir * wallAvoidDistance);
 		Debug.DrawRay(myTransform.position + right45Dir.normalized * minChaseDistance, right45Dir * wallAvoidDistance);
 		
-		Debug.DrawRay(myTransform.position + moveVec.normalized * minChaseDistance,
-			moveVec.normalized * maxChaseDistance);
+		Debug.DrawRay(myTransform.position + moveVector.normalized * minChaseDistance,
+			moveVector.normalized * maxChaseDistance);
 		
 		RaycastHit2D hitLeft = Physics2D.Raycast(myTransform.position + left45Dir.normalized * minChaseDistance,
-			left45Dir, wallAvoidDistance, layerBlockTargey);
+			left45Dir, wallAvoidDistance, layerBlockTarget);
 		if (hitLeft.transform != null)
 		{
-			if (hitLeft.transform.gameObject != myGO)
+			if (hitLeft.transform.gameObject != myGameObject)
 			{
 				obstacleHitType = 1;
 			}
 		}
 
 		RaycastHit2D hitRight = Physics2D.Raycast(myTransform.position + right45Dir.normalized * minChaseDistance,
-			right45Dir, wallAvoidDistance, layerBlockTargey);
+			right45Dir, wallAvoidDistance, layerBlockTarget);
 		if (hitRight.transform != null)
 		{
-			if (hitRight.transform.gameObject != myGO)
+			if (hitRight.transform.gameObject != myGameObject)
 			{
 				if (obstacleHitType == 0)
 				{
@@ -393,22 +371,22 @@ public class BaseAIController2D : ExtendedCustomMonoBehaviour2D
 		if (aTarget == null)
 			return;
 
-		tempDirVec = Vector3.Normalize(aTarget.position - myTransform.position);
-		if (moveVec == Vector3.zero)
+		Vector3 tempMoveVector = Vector3.Normalize(aTarget.position - myTransform.position);
+		if (moveVector == Vector3.zero)
 		{
-			moveVec = tempDirVec;
+			moveVector = tempMoveVector;
 		}
 		else
 		{
-			moveVec = Vector3.Lerp(moveVec, tempDirVec, Time.deltaTime * pathSmoothing);
+			moveVector = Vector3.Lerp(moveVector, tempMoveVector, Time.deltaTime * pathSmoothing);
 		}
 	}
 
 	private bool CanSee(Transform aTarget)
 	{
-		tempDirVec = Vector3.Normalize(aTarget.position - myTransform.position);
+		Vector3 tempMoveVector = Vector3.Normalize(aTarget.position - myTransform.position);
 		
-		RaycastHit2D hit = Physics2D.Raycast(myTransform.position + (minChaseDistance * tempDirVec), tempDirVec,
+		RaycastHit2D hit = Physics2D.Raycast(myTransform.position + minChaseDistance * tempMoveVector, tempMoveVector,
 			maxChaseDistance, layerBlockSee);
 		if (hit.transform != null)
 		{
@@ -427,9 +405,9 @@ public class BaseAIController2D : ExtendedCustomMonoBehaviour2D
 	{
 		Vector3 tempVector = aTarget.position - myTransform.position;
 		float magTempVec = tempVector.magnitude;
-		tempDirVec = Vector3.Normalize(tempVector);
+		Vector3 tempMoveVector = Vector3.Normalize(tempVector);
 		
-		RaycastHit2D hit = Physics2D.Raycast(myTransform.position + (minChaseDistance * tempDirVec), tempDirVec,
+		RaycastHit2D hit = Physics2D.Raycast(myTransform.position + minChaseDistance * tempMoveVector, tempMoveVector,
 			magTempVec, layerBlockWaypoint);
 		if (hit.transform == null)
 		{
@@ -439,24 +417,24 @@ public class BaseAIController2D : ExtendedCustomMonoBehaviour2D
 		return false;
 	}
 
-	public void SetWayController(Waypoints_Controller aControl)
+	public void SetWayController(WaypointsController2D aControl)
 	{
-		myWayControl = aControl;
+		wayController = aControl;
 		
-		totalWaypoints = myWayControl.GetTotal();
+		totalWaypoints = wayController.GetTotal();
 		
 		if (shouldReversePathFollowing)
 		{
-			currentWaypointNum = totalWaypoints - 1;
+			currentWaypointNumber = totalWaypoints - 1;
 		}
 		else
 		{
-			currentWaypointNum = 0;
+			currentWaypointNumber = 0;
 		}
 
 		Init();
 		
-		currentWaypointTransform = myWayControl.GetWaypoint(currentWaypointNum);
+		currentWaypointTransform = wayController.GetWaypoint(currentWaypointNumber);
 
 		if (startAtFirstWaypoint)
 		{
@@ -476,7 +454,7 @@ public class BaseAIController2D : ExtendedCustomMonoBehaviour2D
 
 	private void UpdateWaypoints()
 	{
-		if (myWayControl == null)
+		if (wayController == null)
 			return;
 
 		if (reachedLastWaypoint && destroyAtEndOfWaypoints)
@@ -486,44 +464,45 @@ public class BaseAIController2D : ExtendedCustomMonoBehaviour2D
 		}
 		else if (reachedLastWaypoint)
 		{
-			currentWaypointNum = 0;
+			currentWaypointNumber = 0;
 			reachedLastWaypoint = false;
 		}
 		
 		if (totalWaypoints == 0)
 		{
-			totalWaypoints = myWayControl.GetTotal();
+			totalWaypoints = wayController.GetTotal();
 		}
 
 		if (currentWaypointTransform == null)
 		{
-			currentWaypointTransform = myWayControl.GetWaypoint(currentWaypointNum);
+			currentWaypointTransform = wayController.GetWaypoint(currentWaypointNumber);
 			return;
 		}
 
-		myPosition = myTransform.position;
-		myPosition.z = 0;
+		Vector3 myPositionWithoutZ = myTransform.position;
+		myPositionWithoutZ.z = 0;
 		
-		nodePosition = currentWaypointTransform.position;
-		nodePosition.z = 0;
+		Vector3 currentWaypointPosition = currentWaypointTransform.position;
+		currentWaypointPosition.z = 0;
 		
-		currentWayDist = Vector3.Distance(nodePosition, myPosition);
+		float currentWayDistance = Vector3.Distance(currentWaypointPosition, myPositionWithoutZ);
 
-		if (currentWayDist < waypointDistance)
+		if (currentWayDistance < waypointDistance)
 		{
 			if (shouldReversePathFollowing)
 			{
-				currentWaypointNum--;
-				if (currentWaypointNum < 0)
+				currentWaypointNumber--;
+				
+				if (currentWaypointNumber < 0)
 				{
-					currentWaypointNum = 0;
+					currentWaypointNumber = 0;
 					reachedLastWaypoint = true;
 					
 					if (loopPath)
 					{
-						currentWaypointNum = totalWaypoints - 1;
+						currentWaypointNumber = totalWaypoints - 1;
 						
-						currentWaypointTransform = myWayControl.GetWaypoint(currentWaypointNum);
+						currentWaypointTransform = wayController.GetWaypoint(currentWaypointNumber);
 						
 						reachedLastWaypoint = false;
 					}
@@ -533,17 +512,17 @@ public class BaseAIController2D : ExtendedCustomMonoBehaviour2D
 			}
 			else
 			{
-				currentWaypointNum++;
+				currentWaypointNumber++;
 				
-				if (currentWaypointNum >= totalWaypoints)
+				if (currentWaypointNumber >= totalWaypoints)
 				{
 					reachedLastWaypoint = true;
 					
 					if (loopPath)
 					{
-						currentWaypointNum = 0;
+						currentWaypointNumber = 0;
 						
-						currentWaypointTransform = myWayControl.GetWaypoint(currentWaypointNum);
+						currentWaypointTransform = wayController.GetWaypoint(currentWaypointNumber);
 						
 						reachedLastWaypoint = false;
 					}
@@ -552,18 +531,18 @@ public class BaseAIController2D : ExtendedCustomMonoBehaviour2D
 				}
 			}
 			
-			currentWaypointTransform = myWayControl.GetWaypoint(currentWaypointNum);
+			currentWaypointTransform = wayController.GetWaypoint(currentWaypointNumber);
 		}
 	}
 
 	public float GetHorizontal()
 	{
-		return horz;
+		return horizontal;
 	}
 
 	public float GetVertical()
 	{
-		return vert;
+		return vertical;
 	}
 	#endregion
 }

@@ -1,65 +1,53 @@
 using UnityEngine;
 
-[AddComponentMenu("Base/Input Controller")]
 public class BaseInputController : MonoBehaviour
 {
-	[Header("Fire")] [SerializeField] protected bool Fire1;
-
-	[Header("Weapon Slot")] [SerializeField]
-	protected bool Slot1;
-
-	[SerializeField] protected bool Slot2;
-	[SerializeField] protected bool Slot3;
-	[SerializeField] protected bool Slot4;
-	[SerializeField] protected bool Slot5;
-	[SerializeField] protected bool Slot6;
-	[SerializeField] protected bool Slot7;
-	[SerializeField] protected bool Slot8;
-	[SerializeField] protected bool Slot9;
-
-	[Header("Shift dir")] [SerializeField] protected float vert;
-	[SerializeField] protected float horz;
+	[Header("Fire")]
+	[SerializeField] protected bool fire1;
+	
+	[Header("Weapon Slot")]
+	[SerializeField] protected bool slot1;
+	[SerializeField] protected bool slot2;
+	[SerializeField] protected bool slot3;
+	[SerializeField] protected bool slot4;
+	[SerializeField] protected bool slot5;
+	[SerializeField] protected bool slot6;
+	[SerializeField] protected bool slot7;
+	[SerializeField] protected bool slot8;
+	[SerializeField] protected bool slot9;
+	
+	[Header("Shift direction")]
+	[SerializeField] protected float vertical;
+	[SerializeField] protected float horizontal;
 	[SerializeField] protected bool shouldRespawn;
 	
 	protected virtual void CheckInput()
 	{
-		horz = Input.GetAxis("Horizontal");
-		vert = Input.GetAxis("Vertical");
+		horizontal = Input.GetAxis("Horizontal");
+		vertical = Input.GetAxis("Vertical");
 	}
 
 	public virtual float GetHorizontal()
 	{
-		return horz;
+		return horizontal;
 	}
 
 	public virtual float GetVertical()
 	{
-		return vert;
+		return vertical;
 	}
 
-	public bool Up
-	{
-		get { return vert > 0; }
-	}
+	public bool Up => vertical > 0;
 
-	public bool Down
-	{
-		get { return vert < 0; }
-	}
+	public bool Down => vertical < 0;
 
-	public bool Right
-	{
-		get { return horz > 0; }
-	}
+	public bool Right => horizontal > 0;
 
-	public bool Left
-	{
-		get { return horz < 0; }
-	}
+	public bool Left => horizontal < 0;
 
 	public virtual bool GetFire()
 	{
-		return Fire1;
+		return fire1;
 	}
 
 	public bool GetRespawn()
@@ -71,8 +59,8 @@ public class BaseInputController : MonoBehaviour
 	{
 		var res = Vector3.zero;
 
-		res.x = horz;
-		res.y = vert;
+		res.x = horizontal;
+		res.y = vertical;
 		
 		return res;
 	}

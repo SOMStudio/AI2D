@@ -1,36 +1,34 @@
 using UnityEngine;
 
-public class SimpleAIMover2D : MonoBehaviour
+[AddComponentMenu("SOMStudio/AI2D/SimpleAIController2D")]
+public class SimpleAIMover2D : ExtendedCustomMonoBehaviour2D
 {
-	[SerializeField] protected BaseAIController2D AIController;
-
+	[Header("Simple Mover 2D")]
+	[SerializeField] protected BaseAIController2D aiController;
 	[SerializeField] protected float moveSpeed = 0.5f;
-	[SerializeField] protected float chaseSpeed = 0.6f;
-
+	[SerializeField] protected float chaseSpeed = 0.9f;
 	[SerializeField] protected Vector3 moveDirection;
-
-	[SerializeField] protected Transform myTransform;
 
 	private void Awake()
 	{
-		myTransform = transform;
-		
-		if (AIController == null) AIController = myTransform.GetComponent<BaseAIController2D>();
+		if (aiController == null) aiController = transform.GetComponent<BaseAIController2D>();
 	}
 
-	private void Start()
+	protected override void Start()
 	{
-		if (AIController)
+		base.Start();
+		
+		if (aiController)
 		{
-			moveDirection = new Vector3(AIController.GetHorizontal(), AIController.GetVertical(), 0).normalized;
+			moveDirection = new Vector3(aiController.GetHorizontal(), aiController.GetVertical(), 0).normalized;
 		}
 	}
 
 	private void Update()
 	{
-		if (AIController)
+		if (aiController)
 		{
-			moveDirection = new Vector3(AIController.GetHorizontal(), AIController.GetVertical(), 0).normalized;
+			moveDirection = new Vector3(aiController.GetHorizontal(), aiController.GetVertical(), 0).normalized;
 		}
 
 		if (moveDirection != Vector3.zero)
@@ -42,20 +40,16 @@ public class SimpleAIMover2D : MonoBehaviour
 	
 	public float GetSpeed()
 	{
-		if (AIController)
+		if (aiController)
 		{
-			if (AIController.GetAIState() == AIStates.AIState.chasing_target)
+			if (aiController.GetAIState() == AIStates.AIState.ChasingTarget)
 			{
 				return chaseSpeed;
 			}
-			else
-			{
-				return moveSpeed;
-			}
-		}
-		else
-		{
+
 			return moveSpeed;
 		}
+
+		return moveSpeed;
 	}
 }

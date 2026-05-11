@@ -1,24 +1,23 @@
 ﻿using UnityEngine;
 
-public class PlayerMover : MonoBehaviour
+public class PlayerMover2D : ExtendedCustomMonoBehaviour2D
 {
 	[SerializeField] private float moveSpeed = 0.5f;
-	[SerializeField] private Keyboard_Input keyboardInput;
+	[SerializeField] private KeyboardInput keyboardInput;
 	[SerializeField] private Vector3 moveDirection;
-	[SerializeField] private Transform myTransform;
 	
 	private void Awake()
 	{
-		myTransform = transform;
-
 		if (!keyboardInput)
 		{
-			keyboardInput = GetComponent<Keyboard_Input>();
+			keyboardInput = GetComponent<KeyboardInput>();
 		}
 	}
 
-	private void Start()
+	protected override void Start()
 	{
+		base.Start();
+		
 		if (keyboardInput)
 		{
 			moveDirection = new Vector3(keyboardInput.GetHorizontal(), keyboardInput.GetVertical(), 0).normalized;
