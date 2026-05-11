@@ -1,40 +1,45 @@
-﻿using UnityEngine;
+﻿using SOMStudio.AI2D.Scripts.Base;
+using SOMStudio.AI2D.Scripts.Input;
+using UnityEngine;
 
-public class PlayerMover2D : ExtendedCustomMonoBehaviour2D
+namespace SOMStudio.AI2D.Scripts
 {
-	[SerializeField] private float moveSpeed = 0.5f;
-	[SerializeField] private KeyboardInput keyboardInput;
-	[SerializeField] private Vector3 moveDirection;
+	public class PlayerMover2D : ExtendedCustomMonoBehaviour2D
+	{
+		[SerializeField] private float moveSpeed = 0.5f;
+		[SerializeField] private KeyboardInput keyboardInput;
+		[SerializeField] private Vector3 moveDirection;
 	
-	private void Awake()
-	{
-		if (!keyboardInput)
+		private void Awake()
 		{
-			keyboardInput = GetComponent<KeyboardInput>();
+			if (!keyboardInput)
+			{
+				keyboardInput = GetComponent<KeyboardInput>();
+			}
 		}
-	}
 
-	protected override void Start()
-	{
-		base.Start();
+		protected override void Start()
+		{
+			base.Start();
 		
-		if (keyboardInput)
-		{
-			moveDirection = new Vector3(keyboardInput.GetHorizontal(), keyboardInput.GetVertical(), 0).normalized;
-		}
-	}
-
-	private void Update()
-	{
-		if (keyboardInput)
-		{
-			moveDirection = new Vector3(keyboardInput.GetHorizontal(), keyboardInput.GetVertical(), 0).normalized;
+			if (keyboardInput)
+			{
+				moveDirection = new Vector3(keyboardInput.GetHorizontal(), keyboardInput.GetVertical(), 0).normalized;
+			}
 		}
 
-		if (moveDirection != Vector3.zero)
+		private void Update()
 		{
-			myTransform.position = Vector3.Lerp(myTransform.position, myTransform.position + moveDirection,
-				Time.deltaTime * moveSpeed);
+			if (keyboardInput)
+			{
+				moveDirection = new Vector3(keyboardInput.GetHorizontal(), keyboardInput.GetVertical(), 0).normalized;
+			}
+
+			if (moveDirection != Vector3.zero)
+			{
+				myTransform.position = Vector3.Lerp(myTransform.position, myTransform.position + moveDirection,
+					Time.deltaTime * moveSpeed);
+			}
 		}
 	}
 }

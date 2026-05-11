@@ -1,18 +1,22 @@
+using SOMStudio.AI2D.Scripts.Base;
 using UnityEngine;
 
-[AddComponentMenu("SOMStudio/AI2D/Input/Keyboard Input Controller")]
-public class KeyboardInput : BaseInputController
+namespace SOMStudio.AI2D.Scripts.Input
 {
-	private void LateUpdate()
+	[AddComponentMenu("SOMStudio/AI2D/Input/Keyboard Input Controller")]
+	public class KeyboardInput : BaseInputController
 	{
-		CheckInput();
-	}
+		private void LateUpdate()
+		{
+			CheckInput();
+		}
 	
-	protected override void CheckInput()
-	{
-		base.CheckInput();
+		protected override void CheckInput()
+		{
+			base.CheckInput();
 		
-		fire1 = Input.GetButton("Fire1");
-		shouldRespawn = Input.GetButton("Fire3");
+			fire1 = UnityEngine.Input.GetButton("Fire1");
+			shouldRespawn = UnityEngine.Input.GetButton("Fire3");
+		}
 	}
 }

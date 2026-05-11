@@ -1,4 +1,4 @@
-namespace AIStates
+namespace SOMStudio.AI2D.Scripts.Base
 {
 	public enum AIState
 	{

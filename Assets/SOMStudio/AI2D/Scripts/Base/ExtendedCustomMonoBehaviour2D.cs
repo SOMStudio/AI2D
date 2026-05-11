@@ -1,28 +1,31 @@
 using UnityEngine;
 
-public class ExtendedCustomMonoBehaviour2D : MonoBehaviour
+namespace SOMStudio.AI2D.Scripts.Base
 {
-	[Header("Base")]
-	[SerializeField] protected bool didInit;
-	[SerializeField] protected bool canControl;
-
-	protected Transform myTransform;
-	protected GameObject myGameObject;
-	protected Rigidbody2D myBody;
-
-	protected virtual void Start()
+	public class ExtendedCustomMonoBehaviour2D : MonoBehaviour
 	{
-		Init();
-	}
+		[Header("Base")]
+		[SerializeField] protected bool didInit;
+		[SerializeField] protected bool canControl;
 
-	protected void Init()
-	{
-		myTransform = transform;
+		protected Transform myTransform;
+		protected GameObject myGameObject;
+		protected Rigidbody2D myBody;
 
-		myGameObject = gameObject;
+		protected virtual void Start()
+		{
+			Init();
+		}
 
-		myBody = GetComponent<Rigidbody2D>();
+		protected void Init()
+		{
+			myTransform = transform;
 
-		didInit = true;
+			myGameObject = gameObject;
+
+			myBody = GetComponent<Rigidbody2D>();
+
+			didInit = true;
+		}
 	}
 }
